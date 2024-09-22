@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmAssist - Your Medications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed; /* Add this to make the sidebar fixed */
+            top: 0;
+            left: 0;
+            height: 100vh; /* Add this to make the sidebar full height */
+            overflow-y: auto; /* Add this to make the sidebar scrollable if content exceeds height */
+        }
+
+        .sidebar h1 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px; /* Adjust font size to fit the sidebar */
+            padding-bottom: 10px; /* Add some space between the title and the list */
+            border-bottom: 1px solid #ddd; /* Add a separator between the title and the list */
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0; /* Remove default margin */
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+            }
+
+            .sidebar a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 10px 20px; /* Increased padding-left to 20px */
+            border-radius: 4px;
+            }
+
+            .sidebar a svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+            }
+
+        .sidebar a:hover {
+            background-color: #f0f0f0; /* Add a hover effect */
+            color: #337ab7; /* Change the text color on hover */
+        }
+
+        
+        .main-content {
+            flex-grow: 1;
+            padding: 50px;
+        }
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .frequency-input {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .frequency-input:hover {
+            background-color: #e9ecef;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .user-dropdown {
+            text-align: right;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            float: right;
+        }
+        .user-dropdown-btn {
+            background-color: #f8f9fa;
+            color: #495057;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .user-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .user-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .user-dropdown:hover .user-dropdown-content {
+            display: block;
+        }
+        .user-dropdown:hover .user-dropdown-btn {
+            background-color: #e9ecef;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            padding-left: 300px; /* Add this to make room for the sidebar */
+            padding-top: 75px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- <nav class="navbar">
+            <h1>PharmAssist</h1>
+            <div class="user-dropdown">
+                <button class="user-dropdown-btn">Ahmad El Mokahal ▼</button>
+                <div class="user-dropdown-content">
+                    <a href="#">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </nav> -->
+
+        <div class="sidebar">
+            <h1>PharmAssist</h1>
+            <ul>
+                <li><a href="/user"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"></path>
+                    </svg> Home</a></li>
+                <li><a href="/medications"><svg fill="#000000" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <g id="Pill">
+                      <path d="M19.31,4.691a5.5,5.5,0,0,0-7.78,0l-6.84,6.84a5.5,5.5,0,0,0,3.89,9.39,5.524,5.524,0,0,0,3.89-1.61l6.84-6.84a5.5,5.5,0,0,0,0-7.78Zm-.71,7.07-3.42,3.42L8.82,8.821,12.24,5.4a4.5,4.5,0,0,1,7.68,3.17A4.429,4.429,0,0,1,18.6,11.761Z"></path>
+                    </g>
+                  </svg> Medications</a></li>
+                <li><a href="/search" style="padding-left: 5px;"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50" style="padding-right: 5px;">
+                    <path d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z"></path>
+                    </svg>Lookout</a></li>
+            </ul>
+        </div>
+        <div class="main-content" style="margin-left: 100px;">
+            <div class="user-dropdown">
+                <button class="user-dropdown-btn">Peter Parker ▼</button>
+                <div class="user-dropdown-content">
+                    <a href="#">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+            <h2>Your Medications</h2>
+            <button id="addMedicationBtn" class="btn btn-primary">Add a medication</button>
+            
+            <div id="addMedicationModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Add a medication</h2>
+                    <form id="addMedicationForm" action="/medications-post" method="post">
+                        <div class="form-group">
+                            <label for="medicationName">Medication name</label>
+                            <input type="text" id="medicationName" placeholder="Enter a drug name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dosage">Dosage</label>
+                            <div style="display: flex;">
+                                <input type="number" id="dosage" placeholder="Dosage" style="flex-grow: 1; margin-right: 10px;" required>
+                                <select id="dosageUnit" style="width: 80px;">
+                                    <option value="mg">mg</option>
+                                    <option value="ml">ml</option>
+                                    <option value="g">g</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="frequency">Frequency</label>
+                            <div id="frequency" class="frequency-input">
+                                <span>+</span> Add frequency
+                            </div>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="frequency">Frequency</label>
+                            <!-- Time Picker for Frequency -->
+                            <input type="time" id="frequency" name="frequency" step="1800">
+                        </div>
+                        <div style="text-align: right;">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("addMedicationModal");
+        const btn = document.getElementById("addMedicationBtn");
+        const span = document.getElementsByClassName("close")[0];
+        const cancelBtn = document.getElementById("cancelBtn");
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        cancelBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        form.onsubmit = function(e) {
+        e.preventDefault();
+        const medicationName = document.getElementById("medicationName").value;
+        const dosage = document.getElementById("dosage").value + document.getElementById("dosageUnit").value;
+        const frequency = document.getElementById("frequency").value;
+
+        // Create a JSON object to send to the server
+        const medicationData = {
+            name: medicationName,
+            dosage: dosage,
+            frequency: frequency
+        };
+
+        // Make a POST request to /medications (assuming your Node.js server is listening on this route)
+        fetch('/medications-post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(medicationData)
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
+
+        modal.style.display = "none";
+    }
+    </script>
+</body>
+</html>
